@@ -16,7 +16,7 @@ module.exports = {
 		Publish.findByTag(tag, function(err, items){
 		    initialState.postlists = items.reverse();
 		    initialState.tag = true;
-		    initialState.title = "58同城"
+		    initialState.title = "pblog"
 	    	res.render('index', { data: initialState });
 		})
 	},
@@ -143,7 +143,7 @@ module.exports = {
 	detail: function(req, res){
 		//var id = req.query.id;
 		var initialState = {
-			title: '58同城',
+			title: 'pblog',
 			id: req.params.id
 		};
 		res.render('detail', { data: initialState });
@@ -243,7 +243,7 @@ module.exports = {
 			    };*/
 			    initialState.postlists = items.reverse();
 
-			    initialState.title = "58同城"
+			    initialState.title = "pblog"
 		    	res.render('index', { data: initialState });
 		  	})
 	  	})
@@ -289,7 +289,7 @@ module.exports = {
 			    };
 			    initialState.postlists = postlists;
 
-			    initialState.title = "58同城"
+			    initialState.title = "pblog"
 		    	res.render('home', { data: initialState });
 		  	})
 	  	})
@@ -334,7 +334,7 @@ module.exports = {
 			    };
 			    initialState.postlists = postlists;
 
-			    initialState.title = "58同城"
+			    initialState.title = "pblog"
 		    	res.render('list', { data: initialState });
 		  	})
 	  	})
@@ -364,7 +364,7 @@ module.exports = {
 		    var initialState = {
 		    	lists: postlists,
 		      	items: lists,
-		      	title: '58同城'
+		      	title: 'pblog'
 		    };
 		    res.render('todoapp', { data: initialState });
 	  	});
