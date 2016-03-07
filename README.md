@@ -24,6 +24,18 @@ CSS用的scss+webpack编译;<br />
 * run npm i (may require sudo)
 * run node app.js & the program would run @localhost:3001
 
+## 目录介绍
+
+* logsFile: server logs files
+* models: mongoose models
+* pages: website home
+* public: static resource
+* routes: server route entry
+* schemas: mongoose schemas
+* src: markdown to jsx
+* view: client components & server templetes
+* app.js: server entry
+
 ## Contact Me
 QQ: 792041894<br/>
 weibo: [@imChenJian](http://weibo.com/2973985050)<br/>
