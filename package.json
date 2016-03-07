@@ -1,0 +1,52 @@
+{
+  "name": "pblog",
+  "version": "0.0.1",
+  "description": "webpack-react-mongodb-erv",
+  "main": "app.js,view/index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "webpack, node app"
+  },
+  "author": "imChenJian",
+  "license": "MIT",
+  "keywords": [
+    "react",
+    "env",
+    "webpack",
+    "mongodb"
+  ],
+  "dependencies": {
+    "babel-loader": "^6.2.0",
+    "babel-core": "^6.2.1",
+    "css-loader": "^0.21.0",
+    "cookie-parser": "^1.4.1",
+    "body-parser": "^1.14.2",
+    "director": "^1.2.8",
+    "express": "^4.13.4",
+    "express-react-views": "^0.9.0",
+    "extract-text-webpack-plugin": "^1.0.1",
+    "file-loader": "^0.8.4",
+    "highlight.js": "^9.1.0",
+    "history": "^2.0.0",
+    "jquery": "^2.2.0",
+    "json-loader": "^0.5.4",
+    "jsx-loader": "^0.13.2",
+    "jsxhint": "^0.15.1",
+    "marked": "^0.3.5",
+    "material-ui": "^0.14.4",
+    "moment": "^2.11.1",
+    "multiparty": "^4.1.2",
+    "mongoose": "^4.3.7",
+    "node-gyp": "^3.2.1",
+    "raw-loader": "^0.5.1",
+    "react": "^0.14.7",
+    "react-addons-pure-render-mixin": "^0.14.7",
+    "react-router": "^2.0.0",
+    "react-dom": "^0.14.7",
+    "react-tap-event-plugin": "^0.2.2",
+    "style-loader": "^0.13.0",
+    "underscore": "^1.8.3",
+    "url-loader": "^0.5.6",
+    "webpack": "^1.12.12"
+  }
+}

@@ -1,0 +1,42 @@
+.nav {
+    background: #eee;
+    border-bottom: 1px solid #E3E3E3;
+    color: #aaa;
+    font-size: 14px;
+    height: 44px;
+    line-height: 44px;
+    text-indent: 5px;
+
+    background: #eee;
+    border-bottom: 1px solid #E3E3E3;
+    color: #aaa;
+    font-size: 14px;
+    height: 40px; 
+    line-height: 40px;
+    text-indent: 5px;
+    display: flex;
+}
+.nav a{
+    display: inline-block;
+    text-align: center;
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
+    flex: 1;
+    text-decoration: none;
+    color: #333;
+}
+
+.nav_a a {
+    color: gray;
+    padding: 5px 5px 3px 5px
+}
+
+.nav_a .nav_nourl {
+    color: #a6a6a6
+}
+
+.nav .nav_a {
+    height: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap
+}

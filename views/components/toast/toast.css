@@ -1,0 +1,32 @@
+
+.mainSpinner {
+    width: 33%;
+    background: #000;
+    border-radius: 5px;
+    opacity: .65
+}
+
+.loading {
+    text-align: center;
+    font-size: 16px;
+    color: #fff;
+}
+
+.mainshadow {
+    -webkit-box-pack: center;
+    -webkit-align-items: center;
+    align-items: center;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9993;
+    background: rgba(0,0,0,.498039)
+}
