@@ -40,11 +40,11 @@ CSS用的scss+webpack编译;<br />
 
 Mindex:
 
-![Mindex:](https://github.com/coderwin/pblog/tree/master/public/img/mindex.png)
+![Mindex:](https://github.com/coderwin/pblog/blob/master/public/img/mindex.jpg)
 
 PCindex:
 
-![PCindex:](https://github.com/coderwin/pblog/tree/master/public/img/pcindex.png)
+![PCindex:](https://github.com/coderwin/pblog/tree/master/public/img/pcindex.jpg)
 
 
 ## Contact Me
