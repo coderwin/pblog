@@ -36,6 +36,15 @@ CSS用的scss+webpack编译;<br />
 * view: client components & server templetes
 * app.js: server entry
 
+## 展示
+
+Mindex:
+![Mindex:](https://github.com/coderwin/pblog/tree/master/public/img/mindex.png)
+
+PCindex:
+![PCindex:](https://github.com/coderwin/pblog/tree/master/public/img/pcindex.png)
+
+
 ## Contact Me
 QQ: 792041894<br/>
 weibo: [@imChenJian](http://weibo.com/2973985050)<br/>
