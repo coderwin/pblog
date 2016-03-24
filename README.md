@@ -40,7 +40,7 @@ CSS用的scss+webpack编译;<br />
 
 PCindex:
 
-![PCindex:](https://github.com/coderwin/pblog/tree/master/public/img/pcindex.jpg)
+![PCindex:](./public/img/pcindex.jpg)
 
 
 ## Contact Me
