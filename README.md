@@ -22,25 +22,24 @@ CSS用的scss+webpack编译;<br />
 * git clone this project
 * cd into the folder
 * run npm i (may require sudo)
-* run node app.js & the program would run @localhost:3001
+* run node app.js/npm start & the program would run @localhost:3000
 
 ## 目录介绍
 
-* logsFile: server logs files
+* logs: server logs files
 * models: mongoose models
 * pages: website home
 * public: static resource
 * routes: server route entry
 * schemas: mongoose schemas
-* src: markdown to jsx
-* view: client components & server templetes
+* views: client components & server templetes
 * app.js: server entry
 
 ## 展示
 
-PCindex:
+index:
 
-![PCindex:](./public/img/pcindex.jpg)
+![index:](./public/img/pcindex.jpg)
 
 
 ## Contact Me
