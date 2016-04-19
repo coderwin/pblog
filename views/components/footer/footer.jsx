@@ -1,26 +1,20 @@
+var $ = require("jquery");
+var Pub = require("../../../tools/pub.js");
 var React = require("react");
 var Footer = React.createClass({
 	handleAddCookie: function(e,way){
 		console.log(e);
 		console.log(way);
 	},
+	conponentDidMount:function(){
+		var that = this;
+		Pub.add("hideFooter",function(){
+			$(that.refs.newFooter).hide();
+		})
+	},
     render: function(){
-        /*return (<div className="newFooter">
-			<p className="footer_nav">
-				<a href="http://wap.58.com/bj/?refrom=m58" onClick={this.handleAddCookie.bind(this,"web")} rel="nofollow">普通版</a>
-				<a className="chuping" rel="nofollow">触屏版</a>
-				<a href="http://post.58.com/1" onClick={this.handleAddCookie.bind(this,"pc")}>电脑版</a>
-				<a href="http://api.wireless.58.com/api/redirect/down/535" rel="nofollow">客户端</a>
-			</p>
-			<div className="footer_cop" id="footer_cop"></div>
-			<p className="footer_bot">手机58网：58.com&nbsp;&nbsp;&nbsp;&nbsp;京ICP证060405号</p>
-		</div>)*/
 
-
-
-
-
-		return(<div className="newFooter">
+		return(<div ref="newFooter" className="newFooter">
 			<p className="footerp">Code Crafted With Heart By 
 				<a href="http://github.com/coderwin">@imChenJian</a> using
 				<a href="https://facebook.github.io/react/"> React.js</a> & 
@@ -30,10 +24,7 @@ var Footer = React.createClass({
 			</svg></a></p>
 		  	<p className="footer_bot">PBLOG v1.0 | ©2016 FE@POST</p>
 		</div>)
-		/*return (<div className="newFooter">
-			footer
-		</div>)
-*/    }
+	}
 });
 
 Footer.compname = "footer";

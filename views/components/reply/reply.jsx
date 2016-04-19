@@ -42,6 +42,7 @@ var Reply = React.createClass({
 		    resize: "none",
 		    fontSize: "14px",
 		    overflow: "auto",
+            outline: "none",
     	},
     	replyup: {
     		right: "0",
@@ -118,7 +119,7 @@ var Reply = React.createClass({
         			)
         		})
         	}
-        	<div ref="replyform">
+        	<div className="replyform" ref="replyform">
         		<div style={this.style.replyContentWrap}>
 	        		<div style={this.style.replyTextareaWrap}><textarea onFocus={this.showReplyerInfo} style={this.style.replyContent} className="replyContent" placeholder="说点什么吧～支持markdown哦"></textarea></div>
 	        		<div style={this.style.replyup} onClick={this.handleReplyup} className = "replyup">发表</div>
@@ -128,7 +129,7 @@ var Reply = React.createClass({
         	</div>
         </div>);
         }else {
-        	return (<div ref="replyform">
+        	return (<div className="replyform" ref="replyform">
         		<div style={this.style.replyContentWrap}>
 	        		<div style={this.style.replyTextareaWrap}><textarea onFocus={this.showReplyerInfo} style={this.style.replyContent} className="replyContent" placeholder="说点什么吧～支持markdown哦"></textarea></div>
 	        		<div style={this.style.replyup} onClick={this.handleReplyup} className = "replyup">发表</div>

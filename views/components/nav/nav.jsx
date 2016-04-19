@@ -1,22 +1,4 @@
 var React = require("react");
-var $ = require("jquery");
-// var Nav = React.createClass({
-// 	render: function(){
-// 		return (<div className="nav">
-// 		    <div className="nav_a">
-// 		        <a href="http://m.58.com/">首页</a>&gt;
-// 		        <a href="http://p.m.58.com/">发布</a>&gt;
-// 		        <a className="nav_nourl" href="javascript:;">选择类别</a>
-// 		    </div>
-// 		</div>)
-// 		/*return (<div className="nav">
-// 		    <div className="nav_a">
-// 		    	nav
-// 		    </div>
-// 		</div>)*/
-// 	}
-// });
-
 var Toast = require("../toast/toast.js");
 var Nav = React.createClass({
 	render: function(){

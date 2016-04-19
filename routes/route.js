@@ -1,12 +1,52 @@
 var Log = require("../tools/logs.js");
-var TodoApp = require('../models/todoapp');
 var Passport = require('../models/passport');
 var Publish = require('../models/publish');
 var Reply = require('../models/reply');
 var Pinyin = require("../tools/pinyin.js");
 var fs = require("fs");
 var $ = require("jquery");
+
 module.exports = {
+	/*首页*/
+	index: function(req, res){
+		/*输出用户信息*/
+		console.log(
+			/*Client IP*/"\n\n\nuserinfo:\nIP:"+
+			(req.headers['x-forwarded-for'] ||
+	        req.connection.remoteAddress ||
+	        req.socket.remoteAddress ||
+	        req.connection.socket.remoteAddress).substring(7)+
+	        /*Client UA*/"\nUA:"+
+	        req.headers["user-agent"]+
+	        /*User*/"\nCookie:"+
+	        req.headers["cookie"]+"\n\n\n"
+	    );
+
+		var initialState = {};
+		//删除
+		/*Publish.remove({_id: "56d568ba134623f92353df94"}, function(err, todolist){
+			if (err) {
+				Log("delListError",{"code":"-2","msg":"server error"});
+			}else{
+				//后端日志系统Log
+				Log("delListSuccess",{"code":"0","msg":"delete success"});
+			}
+		})*/
+		//更新
+		/*Publish.update({_id: "56de3c48d1169cfd5a33de68"},{$set: {tag: "javascript"}}, {}, function(err, ifo){
+			if (err) {console.log(err)}
+			console.log("tagupdate success!!")
+		})*/
+		
+		Publish.fetch(function(err, items){
+	  		if (err) { console.log(err)}
+		 
+		    initialState.postlists = items.reverse();
+
+		    initialState.title = "Pblog"
+	    	res.render('index', { data: initialState });
+	  	})
+	},
 	/*标签*/
 	tags: function(req, res){
 
@@ -16,7 +56,7 @@ module.exports = {
 		Publish.findByTag(tag, function(err, items){
 		    initialState.postlists = items.reverse();
 		    initialState.tag = true;
-		    initialState.title = "pblog"
+		    initialState.title = "Pblog"
 	    	res.render('index', { data: initialState });
 		})
 	},
@@ -28,10 +68,8 @@ module.exports = {
 	    var replyer = req.body.replyer;
 	    var connect = req.body.connect;
 	    
-	    console.log(infoid)
 		Reply.findByInfoId(infoid, function(err, replys){
 			if (err) {console.log("reply error"+err)}
-			console.log(replys.length);
 			//回复数＋1
 			var reply_countUpdate = { $set: {reply_count: ((replys.length||"0")+1) }}
 			Publish.update({_id: infoid},reply_countUpdate, {}, function(err, ifo){
@@ -39,7 +77,7 @@ module.exports = {
 				console.log("reply_countUpdate success!!")
 			})
 		})
-
+		//新增回复
 	    var reply = new Reply({
 	    	infoid: infoid,
 	    	content: content,
@@ -47,13 +85,15 @@ module.exports = {
 	    	replyer: replyer
 	    });
 	    reply.save(function(err, _reply){
-	    	if (err) {console.log("add reply error"+err)}
+	    	if (err) {console.log("add reply error\n"+err)}
 	    	res.json({code: 0, msg: "reply success", reply: _reply});
 	    })
 	},
 	/*详情页*/
 	detailAPI: function(req, res){
+		//信息id
 		var id = req.params.id;
+		//前一条和后一条
 		var prevAndAfter = [];
 
 		Publish.findById(id, function(err, info){
@@ -61,7 +101,77 @@ module.exports = {
 
 			/*push 上一条和下一条的infoid*/
 			Publish.fetch(function(err,_items){
-				console.log(_items.reverse()+"------------------------")
+				_items.reverse()
+			Publish.findPrev(id, _items, function(err, previnfo){
+			if (err) {console.log(err)}
+			Publish.findAfter(id, _items, function(err, afterinfo){
+			if (err) {console.log(err)}
+
+			if (previnfo) prevAndAfter[0] = previnfo;
+			if (afterinfo) prevAndAfter[1] = afterinfo;
+
+			//浏览数＋1
+			var visit_countUpdate = { $set: {visit_count: ((info.visit_count||"0")+1) }}
+			Publish.update({_id: id},visit_countUpdate, {}, function(err, ifo){
+				if (err) {console.log(err)}
+				console.log("visit_countUpdate success!!")
+			})
+
+			/*push 信息的info详情*/
+			var path = "public"+info.filePath;
+			var length = __dirname.length;
+			var absolutePath = __dirname.substring(0,length-6) + path;
+			fs.readFile(absolutePath, "utf-8", function(err,data){
+				if (err) {console.log(err)}
+				/*push info评论*/
+				Reply.findByInfoId(id, function(err, replys){
+					if (err) {console.log("reply error"+err)}
+					res.json({
+						code:0, 
+						data: data,
+						reply_count:((info.reply_count||"0")), 
+						visit_count:((info.visit_count||"0")), 
+						replys: replys, 
+						prevAndAfter:prevAndAfter
+					})
+				})
+				
+			})
+
+			}) }) })
+		})
+	},
+
+	/*所有文章api*/
+	topics: function(req, res){
+
+		Publish.fetch(function(err, items){
+	  		if (err) console.log(err);
+
+		    console.log("topics API visit");
+
+		    var initialState = {};
+		    initialState.data = items.reverse();
+
+		    /*处理JSONP*/
+		    if (req.query.jsonPCallback) {
+		    	res.jsonp(req.query.jsonPCallback+"("+JSON.stringify(initialState)+")")
+		    }else res.json(initialState);
+	  	})
+	},
+	/*文章api -- detailAPI*/
+	topic: function(req, res){
+		//信息id
+		var id = req.params.id;
+		//前一条后一条
+		var prevAndAfter = [];
+
+		Publish.findById(id, function(err, info){
+			if (err) {console.log(err)}
+
+			/*push 上一条和下一条的infoid*/
+			Publish.fetch(function(err,_items){
+				_items.reverse()
 			Publish.findPrev(id, _items, function(err, previnfo){
 			if (err) {console.log(err)}
 			Publish.findAfter(id, _items, function(err, afterinfo){
@@ -83,10 +193,6 @@ module.exports = {
 			var absolutePath = __dirname.substring(0,length-6) + path;
 			fs.readFile(absolutePath, "utf-8", function(err,data){
 				if (err) {console.log(err)}
-
-				Reply.fetch(function(err, items){
-					console.log(items)
-				})
 				/*push info评论*/
 				Reply.findByInfoId(id, function(err, replys){
 					if (err) {console.log("reply error"+err)}
@@ -102,321 +208,31 @@ module.exports = {
 				
 			})
 
-			})
-			})
-			})
+			}) }) })
 		})
 	},
-	/*所有文章api*/
-	topics: function(req, res){
-		Publish.fetch(function(err, items){
-	  		if (err) {
-		      	console.log(err);
-		    }
-		    console.log(items);
-		    var initialState = {};
-		    var postlists = [];
-		    for (var i = 0; i < items.length; i++) {
-		    	var list = {};
-		    	list["_id"] = items[i]["_id"];
-		    	list["title"] = items[i]["title"];
-		    	list["content"] = items[i]["content"];
-		    	list["filePath"] = items[i]["filePath"];
-		      	postlists.push(list);
-		    };
-		    initialState.data = postlists.reverse();
 
-	    	res.json(initialState);
-	  	})
-	},
-	/*文章api*/
-	topic: function(req, res){
-		var path = "public/md/"+req.params.id;
-		var length = __dirname.length;
-		var absolutePath = __dirname.substring(0,length-6) + path;
-		fs.readFile(absolutePath, "utf-8", function(err,data){
-			if (err) {console.log(err)}
-			res.json({code:0, data: data})
-		})
-	},
-	/*详情页*//*前端路由暂时弃用*/
+
+	/*详情页*//*前端路由暂时弃用*//*APP用*/
 	detail: function(req, res){
 		//var id = req.query.id;
 		var initialState = {
-			title: 'pblog',
+			title: 'Pblog',
 			id: req.params.id
 		};
 		res.render('detail', { data: initialState });
 	},
-	/*关于页*//*前端路由暂时弃用*/
+	/*关于页*//*前端路由暂时弃用*//*RN APP用*/
 	about: function(req, res){
 
 		res.render('about');
 	},
-	/*登录页*//*前端路由暂时弃用*/
-	login: function(req, res){
-		console.log(req.cookies);
-		if (req.cookies&&req.cookies.username&&req.cookies.password) {
-			Passport.findByName(req.query.uname, function(err,userlist){
-				if(err){
-					//res.redirect('/login');
-					console.log("err"+err)
-				}
-				if (userlist&&userlist.length>0) {
-					//查询到了用户
-					console.log("/")
-					res.redirect('/');
-				}else{
-					//未查询到用户
-					console.log("/login")
-					res.redirect('/login');
-				}
-			})
-		}else{
-			res.render('login');
-		}
-	},
-	/*首页*/
-	index: function(req, res){
-	  	var lists = [];
-		var postlists = [];
-		var initialState = {};
-		Publish.remove({_id: "56d80023dec5b5e93e397e20"}, function(err, todolist){
-			if (err) {
-				Log("delListError",{"code":"-2","msg":"server error"});
-			}else{
-				Log("delListSuccess",{"code":"0","msg":"delete success"});
-			}
-		})
-		Publish.remove({_id: "56d7ffffdec5b5e93e397e1f"}, function(err, todolist){
-			if (err) {
-				Log("delListError",{"code":"-2","msg":"server error"});
-			}else{
-				Log("delListSuccess",{"code":"0","msg":"delete success"});
-			}
-		})
 
-		Publish.remove({_id: "56d5681ecd9860eb2327ec38"}, function(err, todolist){
-			if (err) {
-				Log("delListError",{"code":"-2","msg":"server error"});
-			}else{
-				Log("delListSuccess",{"code":"0","msg":"delete success"});
-			}
-		})
-
-		Publish.remove({_id: "56d568ba134623f92353df94"}, function(err, todolist){
-			if (err) {
-				Log("delListError",{"code":"-2","msg":"server error"});
-			}else{
-				Log("delListSuccess",{"code":"0","msg":"delete success"});
-			}
-		})
-
-		
-		TodoApp.fetch(function(err, contents) {
-		    if (err) {
-		      	console.log(err);
-		    }
-		    //console.log(contents)
-		    for (var i = 0; i < contents.length; i++) {
-		    	var list = {};
-		    	list["_id"] = contents[i]["_id"];
-		    	list["content"] = contents[i]["content"];
-		      	lists.push(list)
-		    };
-		    initialState.items = lists;
-
-		    Publish.fetch(function(err, items){
-		  		if (err) {
-			      	console.log(err);
-			    }
-			    console.log(items)
-			    /*for (var i = 0; i < items.length; i++) {
-			    	var list = {};
-			    	list["_id"] = items[i]["_id"];
-			    	list["title"] = items[i]["title"];
-			    	list["content"] = items[i]["content"];
-			    	list["filePath"] = items[i]["filePath"];
-			    	list["reply_count"] = items[i]["reply_count"];
-			    	list["visit_count"] = items[i]["visit_count"];
-			      	postlists.push(list);
-			    };*/
-			    initialState.postlists = items.reverse();
-
-			    initialState.title = "pblog"
-		    	res.render('index', { data: initialState });
-		  	})
-	  	})
-	},
-	// 测试首页/*前端路由暂时弃用*/
-	h: function(req, res){
-	  	var lists = [];
-		var postlists = [];
-		var initialState = {};
-		// 数据删除
-		Publish.remove({_id: "56c695bb4443d5e0469acf58"}, function(err, todolist){
-			if (err) {
-				Log("delListError",{"code":"-2","msg":"server error"});
-			}else{
-				Log("delListSuccess",{"code":"0","msg":"delete success"});
-			}
-		})
-		TodoApp.fetch(function(err, contents) {
-		    if (err) {
-		      	console.log(err);
-		    }
-		    //console.log(contents)
-		    for (var i = 0; i < contents.length; i++) {
-		    	var list = {};
-		    	list["_id"] = contents[i]["_id"];
-		    	list["content"] = contents[i]["content"];
-		      	lists.push(list)
-		    };
-		    initialState.items = lists;
-
-		    Publish.fetch(function(err, items){
-		  		if (err) {
-			      	console.log(err);
-			    }
-			    //console.log(items)
-			    for (var i = 0; i < items.length; i++) {
-			    	var list = {};
-			    	list["_id"] = items[i]["_id"];
-			    	list["title"] = items[i]["title"];
-			    	list["content"] = items[i]["content"];
-			    	list["filePath"] = items[i]["filePath"];
-			      	postlists.push(list);
-			    };
-			    initialState.postlists = postlists;
-
-			    initialState.title = "pblog"
-		    	res.render('home', { data: initialState });
-		  	})
-	  	})
-	},
-	// 列表页/*前端路由暂时弃用*/
-	list: function(req, res){
-		var lists = [];
-		var postlists = [];
-		var initialState = {};
-		Publish.remove({_id: "56c695bb4443d5e0469acf58"}, function(err, todolist){
-			if (err) {
-				Log("delListError",{"code":"-2","msg":"server error"});
-			}else{
-				Log("delListSuccess",{"code":"0","msg":"delete success"});
-			}
-		});
-		TodoApp.fetch(function(err, contents) {
-		    if (err) {
-		      	console.log(err);
-		    }
-		    //console.log(contents)
-		    for (var i = 0; i < contents.length; i++) {
-		    	var list = {};
-		    	list["_id"] = contents[i]["_id"];
-		    	list["content"] = contents[i]["content"];
-		      	lists.push(list)
-		    };
-		    initialState.items = lists;
-
-		    Publish.fetch(function(err, items){
-		  		if (err) {
-			      	console.log(err);
-			    }
-			    //console.log(items)
-			    for (var i = 0; i < items.length; i++) {
-			    	var list = {};
-			    	list["_id"] = items[i]["_id"];
-			    	list["title"] = items[i]["title"];
-			    	list["content"] = items[i]["content"];
-			    	list["filePath"] = items[i]["filePath"];
-			      	postlists.push(list);
-			    };
-			    initialState.postlists = postlists;
-
-			    initialState.title = "pblog"
-		    	res.render('list', { data: initialState });
-		  	})
-	  	})
-	},
-	// 发布页面/*前端路由暂时弃用*/
-	post: function(req, res){
-
-    	res.render('post');
-	},
-	// tododemo
-	todo: function(req, res){
-		TodoApp.fetch(function(err, contents) {
-		    if (err) {
-		      	console.log(err);
-		    }
-		    //console.log(contents)
-		    var lists = [];
-		    for (var i = 0; i < contents.length; i++) {
-		    	var list = {};
-		    	list["_id"] = contents[i]["_id"];
-		    	list["content"] = contents[i]["content"];
-		      	lists.push(list)
-		    };
-
-		    var postlists = [];
-
-		    var initialState = {
-		    	lists: postlists,
-		      	items: lists,
-		      	title: 'pblog'
-		    };
-		    res.render('todoapp', { data: initialState });
-	  	});
-	},
-	/*新增ajax*///tododemo
-	add: function(req, res) {
-	    console.log("add")
-	    var content = req.body.content;
-
-	    var todo = new TodoApp({
-	      content: content
-	    });
-
-	    todo.save(function(err, content) {
-	      	if (err) {
-	        	var err = {'code':'-1','msg':'mongodb error','id':content._id};
-
-	        	Log("addListError",err);
-	        	res.status(500).send(err);
-	      	}else{
-	      		var success = {'code':'0','msg':'todolist save success','id':content._id};
-	      		Log("addListSuccess",success);
-	      		res.status(200).send(success);
-	      	}
-	    });
-	},
-	/*删除ajax*//*tododemo*/
-	del: function(req, res){
-		console.log("del");
-		var dbid = req.query.dbid;
-		if(!dbid) {
-			Log("delListError4norParm",{"code":"-1","msg":"not dbid"});
-			res.json({"code":"-1","msg":"not dbid"});
-		}
-		TodoApp.remove({_id: dbid}, function(err, todolist){
-			if (err) {
-				Log("delListError",{"code":"-2","msg":"server error"});
-				res.json({"code":"-2","msg":"server error"});
-			}else{
-				Log("delListSuccess",{"code":"0","msg":"delete success", "id": dbid});
-				res.json({"code":"0","msg":"delete success", "id": dbid})
-			}
-		})
-	},
 	/*login ajax*/
 	userlogin: function(req,res){
-		console.log("login");
-		console.log(req.query.uname);
-		//console.log(Passport)
-		//res.json({"code":"0","msg":req.query});
+		console.log(req.query.uname+"-login");
 		Passport.findByName(req.query.uname, function(err,userlist){
-			if(err) console.log("err"+err)
+			if(err) console.log("find username err-"+err)
 			if (userlist&&userlist.length>0) {
 				//查询到了用户
 				if(userlist[0]["password"] == req.query.pword){
@@ -428,7 +244,6 @@ module.exports = {
 					res.json({"code":"-1","msg":"login fail, 密码不正确", "name": userlist[0]["name"]})
 					// res.redirect('/login');
 				}
-				
 			}else{
 				//未查询到用户
 				if (req.query.uname=="admain"&&req.query.pword=="aaa111") {
@@ -464,7 +279,9 @@ module.exports = {
 	},
 	/*退出ajax*/
 	loginout: function(req, res){
+
 		console.log(req.cookies)
+
 		if (req.cookies&&req.cookies.username&&req.cookies.password) {
 			res.clearCookie("username");
 			res.clearCookie("password");
@@ -475,13 +292,11 @@ module.exports = {
 	},
 	/*发布ajax*/
 	publish: function(req, res){
+
 		var title = req.body.title;
 		var content = req.body.title;
 		var fileVal = req.body.fileVal;
 		var tag = req.body.tag || "javascript"
-		console.log(req.body);
-		
-	 	console.log("publish")
 	    var content = req.body.content;
 
 	    var publish = new Publish({
@@ -494,12 +309,13 @@ module.exports = {
 	    publish.save(function(err, item) {
 	      	if (err) {
 	        	var err = {'code':'-1','msg':'mongodb error','id':item._id};
-
-	        	Log("addListError",err);
+	        	console.log(err);
+	        	//Log("addListError",err);
 	        	res.status(500).send(err);
 	      	}else{
 	      		var success = {'code':'0','msg':'todolist save success','id':item._id};
-	      		Log("addListSuccess",success);
+	        	console.log(success);
+	      		//Log("addListSuccess",success);
 	      		res.status(200).send(success);
 	      	}
 	    });
@@ -553,5 +369,161 @@ module.exports = {
 				});
 			}
 		});
+	},
+	//截图;代码乱-没整理
+	snapshot: function(req, res){
+
+		console.log(req.query.imgurl);
+
+		var phantom = require('phantom');
+		// var cb = require("child_process");
+
+		var imgUrl = req.query.imgurl;
+		if (imgUrl.indexOf("://")==-1) {
+			imgUrl = "https://"+imgUrl
+		}
+		var imgName = req.query.imgurl.split("//").pop().substring(0,10);
+
+		var infoid = imgUrl.split("/").pop();
+		var title = null;
+
+		Publish.findById(infoid,function(err, item){
+
+			title = item.title;
+			if (fs.existsSync("./public/imgs/"+ infoid +".png")) {
+				res.json({code:0,imgurl:"/imgs/"+infoid+".png",imgname:title+".png"})
+				return;
+			}
+
+			var pg = null;
+			var ph = null;
+			phantom.create(['--ignore-ssl-errors=yes', '--disk-cache=yes']).then((instance) => {
+		        ph = instance;
+		        return ph.createPage();
+		    }).then((page) => {
+		        pg = page;
+				/*pg.viewportSize = { 
+					height: 627, 
+					width: req.query.clientWidth, 
+				};*/
+				return pg.open(imgUrl);
+		    }).then((status) => {
+		        console.log(status);
+			    // 通过在页面上执行脚本获取页面的渲染高度
+			    pg.property('viewportSize', {width: req.query.clientWidth, height: 627}).then(function(){
+					var bb = pg.evaluate(function () { 
+						document.body.style.backgroundColor = '#FFF';
+						document.body.style.border = '2px #ccc solid';
+						document.body.style.borderRadius = '4px';
+						var md = document.getElementsByClassName('markdown-body')[0].outerHTML;
+						document.getElementsByTagName('body')[0].innerHTML=md;
+						return document.getElementsByTagName("body")[0].getBoundingClientRect(); 
+					});
+					// 按照实际页面的高度，设定渲染的宽高
+					pg.clipRect = {
+						top: 0,
+						left: 0,
+						width:bb.width,
+						height: bb.height
+					};
+					pg.render("./public/imgs/"+ infoid +".png");
+					var interval = setInterval(function(){
+						if (fs.existsSync("./public/imgs/"+ infoid+".png")) {
+							console.log("成功")
+							clearInterval(interval);
+							console.log({code:0,imgurl:"/imgs/"+infoid+".png",imgname:title+".png"})
+							res.json({code:0,imgurl:"/imgs/"+infoid+".png",imgname:title+".png"})
+						}
+					},1000)
+					pg.close();
+				})
+		    }).catch((error) => {
+		        console.log(error);
+		        ph.exit(); 
+		    });
+		})
+	},
+
+
+	/*登录页*//*前端路由暂时弃用*/
+	login: function(req, res){
+		console.log(req.cookies);
+		if (req.cookies&&req.cookies.username&&req.cookies.password) {
+			Passport.findByName(req.query.uname, function(err,userlist){
+				if(err){
+					//res.redirect('/login');
+					console.log("err"+err)
+				}
+				if (userlist&&userlist.length>0) {
+					//查询到了用户
+					console.log("/")
+					res.redirect('/');
+				}else{
+					//未查询到用户
+					console.log("/login")
+					res.redirect('/login');
+				}
+			})
+		}else{
+			res.render('login');
+		}
+	},
+	// 列表页/*前端路由暂时弃用*/
+	list: function(req, res){
+
+		var initialState = {};
+
+		Publish.fetch(function(err, items){
+	  		if (err) { console.log(err)}
+		 
+		    initialState.postlists = items.reverse();
+
+		    initialState.title = "Pblog"
+	    	res.render('index', { data: initialState });
+	  	});
+	},
+	// 发布页面/*前端路由暂时弃用*/
+	post: function(req, res){
+
+    	res.render('post');
+	},
+	/*新增ajax*///tododemo
+	add: function(req, res) {
+	    var content = req.body.content;
+
+	    var todo = new TodoApp({
+	      content: content
+	    });
+
+	    todo.save(function(err, content) {
+	      	if (err) {
+	        	var err = {'code':'-1','msg':'mongodb error','id':content._id};
+
+	        	Log("addListError",err);
+	        	res.status(500).send(err);
+	      	}else{
+	      		var success = {'code':'0','msg':'todolist save success','id':content._id};
+	      		Log("addListSuccess",success);
+	      		res.status(200).send(success);
+	      	}
+	    });
+	},
+	/*删除ajax*//*tododemo*/
+	del: function(req, res){
+		console.log("del");
+		var dbid = req.query.dbid;
+		if(!dbid) {
+			Log("delListError4norParm",{"code":"-1","msg":"not dbid"});
+			res.json({"code":"-1","msg":"not dbid"});
+		}
+		TodoApp.remove({_id: dbid}, function(err, todolist){
+			if (err) {
+				Log("delListError",{"code":"-2","msg":"server error"});
+				res.json({"code":"-2","msg":"server error"});
+			}else{
+				Log("delListSuccess",{"code":"0","msg":"delete success", "id": dbid});
+				res.json({"code":"0","msg":"delete success", "id": dbid})
+			}
+		})
 	}
 };

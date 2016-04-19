@@ -17,10 +17,22 @@ CSS用的scss+webpack编译;<br />
 打包工具用的是webpack+一些列的loader(md用的raw-loader);<br />
 全站采用响应式布局，M和PC共用
 
+## API
+
+* 获取所有信息资源：
+
+```javascript
+http://10.252.164.175:3001/api/topics
+```
+
+* 获取指定信息详情和评论：
+
+```javascript
+http://10.252.164.175:3001/api/topics/:id(信息ID)
+```
+
 ## Contact Me
 QQ: 792041894<br/>
-weibo: [@imChenJian](http://weibo.com/2973985050)<br/>
-zhihu: [@imChenJian](https://www.zhihu.com/people/imchenjian)<br/>
 weixin: chenjian3875<br/>
 Email: chenjiancj2011@outlook.com<br/>
 

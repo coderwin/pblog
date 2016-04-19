@@ -4,13 +4,13 @@ var MarkdownElement = require("../markdown/markdownElement.jsx");
 var Loading = require("../loading/loading.jsx");
 var $ = require("jquery");
 var Reply = require("../reply/reply.jsx");
-// let MarkdownText = "Load Failed!";
+var Snapshot = require("../snapshot/snapshot.jsx");
 var Post = React.createClass({
     /*PropTypes: {
         post: React.PropTypes.object
     },*/
     style: {
-		marginTop: "78px"
+		marginTop: ((typeof location!="undefined")&&location.search.indexOf("plat=app")!=-1)?0:"78px"
 	},
     getInitialState: function() {
         return {
@@ -89,7 +89,7 @@ var Post = React.createClass({
     	var s = this.props.id.split(".").pop();
     	if(s=="png"||s=="jpg"||s=="jpeg"){
         	var imgurl = "/img/"+this.props.id;
-        	return (<div style={this.style}>
+        	return (<div className="detailContainer" style={this.style}>
                 <img style={{
                     width:"96%",
                     height:"100%",
@@ -106,15 +106,15 @@ var Post = React.createClass({
 
         var prevAndAfter = this.state.prevAndAfter;
 
-        return (<div style={this.style}>
+        return (<div className="detailContainer" style={this.style}>
             <MarkdownElement text={this.state.MarkdownText} />
-            <div style={{
+            <div className="replys-visits" style={{
                 fontSize: "12px",
                 padding: "10px",
                 color: "#767171"
             }}>{this.state.replys.length} replys / {this.state.visit_count} visits</div>
 
-            <div style={{
+            <div className="prev-next-title" style={{
                 border: "1px solid #efefef",
                 margin: "10px",
                 background: "#fbfbfb",
@@ -125,7 +125,8 @@ var Post = React.createClass({
                 <div>上一篇：{prevAndAfter[0]?prevAndAfter[0]["title"]:"这是第一篇哦"}</div>
                 <div>下一篇：{prevAndAfter[1]?prevAndAfter[1]["title"]:"最后一篇了哦"}</div>
             </div>
-            <div style={{
+            <Snapshot />
+            <div className="prev-next" style={{
                 padding:"10px",
                 color:"#999",
                 textAlign:"center",

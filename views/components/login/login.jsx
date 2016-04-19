@@ -16,8 +16,9 @@ var Login = React.createClass({
 		return (
 			<div ref="loginWrap" className="loginWrap" style={this.style.wrap}>
 			    <div className = "loginContent">
-			        用户：<input className="username" placeholder="用户名" /><br />
-					密码：<input type="password" className="password" placeholder="密码" /><br />
+
+			        <p>用户：<input className="username" placeholder="用户名" /></p>
+					<p>密码：<input type="password" className="password" placeholder="密码" /></p>
 					<button className="login" onClick={this.gotoLogin}>登录</button>
 				</div>
 			</div>

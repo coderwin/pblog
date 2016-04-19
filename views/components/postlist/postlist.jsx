@@ -1,17 +1,17 @@
-var React = require('react');
-// var Link = require("react-router").Link;
 var $ = require("jquery");
-/*var Link = require("../../../public/js/ReactRouter.min.js").Link;*/
+var React = require('react');
 var json4postlist = require("../../../public/post/json4postlist.json");
 
 var Pagination = require("../pagination/pagination.jsx");
+var Pub = require("../../../tools/pub.js");
 
 var Postlist = React.createClass({
 	getpostlists: function(){
 		if (this.props.postlists.length) {
 			return this.props.postlists
 		}else{
-			return (json4postlist||[])
+			// return (json4postlist||[])
+			return [];
 		}
 	},
 	getInitialState: function(){
@@ -27,38 +27,38 @@ var Postlist = React.createClass({
 			curpage: 1
 		};
 	},
-	componentDidMount: function(){
-		/*var that = this;
-		$.ajax({
-			url: "/post/json4postlist.json",
-			success: function(res){
-				that.setState({
-					lists: res
-				})
-			}
-		})*/
-	},
+	componentDidMount: function(){},
 	render: function(){
+		console.log(this.state.lists);
 		var maxlist = 20;
 		var lists = this.state.lists;
+
+		if (lists.length==0) {
+			
+			return(<div className="postlistwrap">
+				<p style={{
+					height:"200px",
+					widrh:"100%",
+					textAlign:"center",
+				}}>还没有任何文章！</p>
+			</div>)
+
+			setTimeout(function(){
+				Pub.fire("hideFooter");
+			},10)
+		}
+
+
 		var curpage = this.state.curpage;
 
 		var listsnum = lists.length;
 		var pagesnum = Math.ceil(lists.length/maxlist);
 		var curlists = lists.slice(maxlist*(curpage-1),maxlist*curpage);
-		console.log(lists)
 		var curlists = this.state.curlists;
-					//<span className="createAt">{JSON.stringify(item.meta.createAt)}</span>
-
 		return (
 		<div className="postlistwrap">
 			{curlists.map(function(item,index){
-				// console.log(typeof(item.meta.createAt));
-				// for(var k in item.meta.createAt){
-					//console.log(JSON.stringify(item.meta.createAt).substr(1,10))
 				var n = JSON.stringify(item.meta.createAt).substr(1,10);
-				// }
-				//console.log(typeof(item.meta.createAt.format('YYYY-MM-DD HH:MM')))
 				return (
 				<div className="postlist" key={index}>
 					<span className="createAt">{n}</span>
@@ -76,7 +76,6 @@ var Postlist = React.createClass({
 	},
 	handleParentChangePage: function(page){
 		var lists = this.getpostlists()||window.datasrc.postlists||[];
-		console.log(lists);
 		var curpage = page;
 		var maxlist = 20;
 		var pagesnum = lists.length;

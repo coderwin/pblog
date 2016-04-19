@@ -5,7 +5,7 @@
   "main": "app.js,view/index.js",
   "devDependencies": {},
   "scripts": {
-    "test": "webpack, node app"
+    "start": "node App.js"
   },
   "author": "imChenJian",
   "license": "MIT",

@@ -14,7 +14,7 @@ var PassportSchema = new mongoose.Schema({
 PassportSchema.pre('save', function(next) {
     this.meta.createAt = Date.now();
     next();
-})
+});
 
 PassportSchema.statics = {
     fetch: function(cb) {
@@ -32,17 +32,6 @@ PassportSchema.statics = {
             name: new RegExp(name,'i')
         }).exec(cb);
     }
-}
-
-
-// PersonSchema.statics.findByName = function(name,cb){
-//     this.find({name:new RegExp(name,'i'),cb});
-//   }
-//   var PersonModel = mongoose.model('Person',PersonSchema);
-//   PersonModel.findByName('krouky',function(err,persons){
-//     //找到所有名字叫krouky的人
-//   });
-
-
+};
 
 module.exports = PassportSchema;

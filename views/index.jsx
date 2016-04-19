@@ -39,7 +39,7 @@ var App = React.createClass({
 		return (
             <html lang="en">
 	            <head>
-	                <title>pblog</title>
+	                <title>Pblog</title>
 	                <meta charSet="utf-8" />
 				    <meta name="viewport" content="initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width" />
 				    <meta name="format-detection" content="telephone=no" />

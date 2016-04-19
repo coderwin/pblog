@@ -1,6 +1,4 @@
 var React = require('react');
-// var Link = require("react-router").Link;
-//var Link = require("../../../public/js/ReactRouter.min.js").Link;
 
 var $ = require("jquery");
 var TodoList = React.createClass({
@@ -74,9 +72,6 @@ var TodoApp = React.createClass({
     })
   },
   render: function() {
-    /*<a href="/about" className="readme">About</a>
-    <button className="submitbtn">{'Add #' + (this.state.items.length + 1)}</button>*/
-    //<TodoList items={this.state.items} callParentDelete = {this.callParentDelete} />
     return (
       <div className="container">
         <h3>TODO List</h3>
@@ -87,7 +82,8 @@ var TodoApp = React.createClass({
           </div>
           
         </form>
-        <a href="/#/about" className="readme">About</a>
+        <TodoList items={this.state.items} callParentDelete = {this.callParentDelete} />
+        <button className="submitbtn">{'Add #' + (this.state.items.length + 1)}</button>
       </div>
     );
   }

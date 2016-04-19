@@ -18,9 +18,11 @@ var AppLeftNav = React.createClass({
   componentDidMount: function(){
   	var that = this;
   	Pub.add("toggleLeftNav",function(){
+      if (that.isMounted()) {
   		that.setState({
           leftNavOpen: !that.state.leftNavOpen
       })
+      }
   	})
   },
   render: function(){

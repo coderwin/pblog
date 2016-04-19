@@ -39,17 +39,13 @@ PublishSchema.statics = {
     findPrev: function(id,items, cb){
         var error = null;
         for (var i = 0; i < items.length; i++) {
-            console.log(items[i])
             if(items[i]["_id"]==id){
                 if(id==0){
                     return cb(error)
                 }
-                console.log(items[i-1])
                 return cb(error, items[i-1])
             }
         }
-        //error = {code: -1, msg: "no find"};
-        //cb(error)
     },
     findAfter: function(id,items, cb){
         var error = null;
@@ -58,12 +54,9 @@ PublishSchema.statics = {
                 if (i==items.length-1) {
                     return cb(error)
                 }
-                console.log(items[i+1])
                 return cb(error, items[i+1])
             }
         }
-        //error = {code: -1, msg: "no find"};
-        //cb(error)
     }
 }
 
